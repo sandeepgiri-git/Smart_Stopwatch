@@ -1,0 +1,111 @@
+/* ============================================================
+   FLOATING WIDGET STYLES — Injected into every page
+   All classes prefixed with 'sst-' to avoid conflicts
+   ============================================================ */
+
+#sst-floating-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  pointer-events: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#sst-floating-widget.sst-hidden {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  pointer-events: none;
+}
+
+/* The pill */
+#sst-widget-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(15, 15, 19, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#sst-widget-pill:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5);
+}
+
+#sst-widget-pill:active {
+  cursor: grabbing;
+}
+
+#sst-widget-pill.sst-tracking {
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+/* Dot */
+#sst-widget-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #52525b;
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+#sst-widget-dot.sst-active {
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+  animation: sst-pulse 2s infinite;
+}
+
+@keyframes sst-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Time */
+#sst-widget-time {
+  font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e4e4e7;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+#sst-widget-time.sst-tracking {
+  color: #4ade80;
+}
+
+/* Close button */
+#sst-widget-close {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: #52525b;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+  padding: 0;
+  margin-left: 2px;
+}
+
+#sst-widget-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}

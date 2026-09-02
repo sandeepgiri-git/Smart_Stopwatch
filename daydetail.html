@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day Detail — Smart Study Stopwatch</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* Back Button & Header */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      color: #a1a1aa;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      margin-bottom: 28px;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #e4e4e7;
+      transform: translateX(-2px);
+    }
+
+    .back-btn svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .date-header {
+      margin-bottom: 32px;
+    }
+
+    .date-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .date-header .day-label {
+      font-size: 14px;
+      color: #71717a;
+    }
+
+    /* Summary Cards */
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .summary-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .summary-card.primary {
+      background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.05));
+      border-color: rgba(34,197,94,0.2);
+    }
+
+    .summary-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #71717a; margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 28px; font-weight: 700;
+    }
+
+    .summary-card.primary .summary-value { color: #4ade80; }
+
+    /* Donut Chart */
+    .chart-section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .chart-section-title {
+      font-size: 15px; font-weight: 600; margin-bottom: 20px;
+    }
+
+    .chart-layout {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .chart-container {
+      flex-shrink: 0;
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+
+    .chart-container canvas {
+      width: 180px;
+      height: 180px;
+    }
+
+    .chart-center-label {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .chart-center-label .center-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px; font-weight: 700; color: #4ade80;
+    }
+
+    .chart-center-label .center-sub {
+      font-size: 10px; color: #71717a; margin-top: 2px;
+    }
+
+    .chart-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .chart-legend::-webkit-scrollbar { width: 4px; }
+    .chart-legend::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-domain {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .legend-time {
+      font-family: 'JetBrains Mono', monospace;
+      color: #a1a1aa;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    /* Breakdown Table */
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .breakdown-table th {
+      text-align: left;
+      font-size: 10px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #52525b;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .breakdown-table td {
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .breakdown-table tr {
+      transition: background 0.15s ease;
+    }
+
+    .breakdown-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px; height: 24px;
+      border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .rank-1 { background: rgba(250,204,21,0.15); color: #facc15; }
+    .rank-2 { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .rank-3 { background: rgba(217,119,6,0.15); color: #d97706; }
+    .rank-default { background: rgba(255,255,255,0.05); color: #52525b; }
+
+    .site-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    .time-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: #4ade80;
+    }
+
+    .percent-bar-bg {
+      width: 100px; height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .percent-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.4s ease;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .empty-state .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #a1a1aa;
+    }
+
+    .empty-state .empty-text {
+      font-size: 14px;
+      color: #52525b;
+    }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .chart-layout {
+        flex-direction: column;
+      }
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Category badge */
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Back Button -->
+    <a class="back-btn" id="backBtn" href="#">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Back to Dashboard
+    </a>
+
+    <!-- Date Header -->
+    <div class="date-header">
+      <h1 id="dateTitle">—</h1>
+      <div class="day-label" id="dayLabel"></div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row">
+      <div class="summary-card primary">
+        <div class="summary-label">Total Study Time</div>
+        <div class="summary-value" id="totalTime">0:00</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Websites Visited</div>
+        <div class="summary-value" id="siteCount">0</div>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="chart-section" id="chartSection" style="display:none;">
+      <div class="chart-section-title">📊 Time Distribution</div>
+      <div class="chart-layout">
+        <div class="chart-container">
+          <canvas id="donutChart" width="360" height="360"></canvas>
+          <div class="chart-center-label">
+            <div class="center-time" id="centerTime">—</div>
+            <div class="center-sub">total</div>
+          </div>
+        </div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+    </div>
+
+    <!-- Breakdown Table -->
+    <div class="card">
+      <div class="card-title">📋 Per-Website Breakdown</div>
+      <table class="breakdown-table" id="breakdownTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Website</th>
+            <th>Time</th>
+            <th>Share</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">No study data</div>
+        <div class="empty-text">No websites were tracked on this day.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="defaults.js"></script>
+  <script src="daydetail.js"></script>
+</body>
+</html>

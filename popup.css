@@ -1,0 +1,339 @@
+/* ============================================================
+   POPUP STYLES — Premium dark theme for the study stopwatch
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 320px;
+  background: #0f0f13;
+  color: #e4e4e7;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ---- Header ---- */
+.popup-header {
+  padding: 16px 18px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.popup-header .logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.popup-header .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e4e4e7;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Global Timer Section ---- */
+.global-timer-section {
+  padding: 20px 18px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-ring-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 5;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 326.73;  /* 2 * PI * 52 */
+  stroke-dashoffset: 326.73; /* fully hidden */
+  transition: stroke-dashoffset 0.8s ease;
+  filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.3));
+}
+
+.progress-ring-fill.complete {
+  stroke: #facc15;
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.4));
+}
+
+.timer-ring-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.global-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #71717a;
+  margin-bottom: 4px;
+}
+
+.global-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.global-time.tracking {
+  color: #4ade80;
+  text-shadow: 0 0 30px rgba(74, 222, 128, 0.25);
+}
+
+.goal-label {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.goal-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: #71717a;
+}
+
+.goal-text.achieved {
+  color: #facc15;
+  font-weight: 600;
+}
+
+/* ---- Status Indicator ---- */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  margin: 0 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #71717a;
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.status-dot.active {
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+  animation: pulse-dot 2s infinite;
+}
+
+.status-dot.paused {
+  background: #facc15;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa;
+}
+
+.status-site {
+  font-weight: 600;
+  color: #d4d4d8;
+}
+
+/* ---- Today's Stats ---- */
+.today-section {
+  padding: 16px 18px;
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.stat-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #71717a;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e4e4e7;
+}
+
+/* ---- Display Options ---- */
+.display-options {
+  padding: 12px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 8px;
+}
+
+.display-options-title {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #71717a;
+  margin-bottom: 12px;
+}
+
+.display-toggles {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toggle-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+/* Toggle Switch (reused from options.css) */
+.toggle { position: relative; width: 34px; height: 18px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.1); border-radius: 18px; transition: background 0.2s ease; }
+.toggle-slider::before { content: ''; position: absolute; height: 12px; width: 12px; left: 3px; bottom: 3px; background: #71717a; border-radius: 50%; transition: transform 0.2s ease, background 0.2s ease; }
+.toggle input:checked + .toggle-slider { background: rgba(74, 222, 128, 0.25); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); background: #4ade80; }
+
+/* ---- Actions ---- */
+.actions {
+  padding: 12px 18px 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* ---- Footer Links ---- */
+.footer-links {
+  padding: 0 18px 16px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.footer-link {
+  font-size: 11px;
+  font-weight: 500;
+  color: #52525b;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.footer-link:hover {
+  color: #a1a1aa;
+}

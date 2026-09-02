@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Study Stopwatch — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="logo-icon">📚</div>
+      <div>
+        <h1>Settings</h1>
+        <div class="subtitle">Manage your study websites and preferences</div>
+      </div>
+    </div>
+
+    <!-- Whitelist Card -->
+    <div class="card">
+      <div class="card-title">🌐 Study Websites</div>
+      <div class="card-description">
+        Only these websites will be tracked. Toggle sites on/off or add your own custom domains.
+      </div>
+
+      <!-- Add Website -->
+      <div class="add-site-row">
+        <input type="text" class="add-site-input" id="newSiteInput" placeholder="e.g. myuniversity.edu">
+        <button class="add-site-btn" id="addSiteBtn">+ Add</button>
+      </div>
+
+      <!-- Site List -->
+      <ul class="site-list" id="siteList">
+        <!-- Populated by options.js -->
+      </ul>
+    </div>
+
+    <!-- Idle Timeout Card -->
+    <div class="card">
+      <div class="card-title">⏱️ Idle Timeout</div>
+      <div class="card-description">
+        Pause tracking after this many minutes of no mouse movement, scrolling, or keyboard activity.
+      </div>
+      <div class="slider-row">
+        <input type="range" id="idleSlider" min="1" max="5" step="0.5" value="2">
+        <div class="slider-value" id="idleValue">2 min</div>
+      </div>
+    </div>
+
+    <!-- Daily Goal Card -->
+    <div class="card">
+      <div class="card-title">🎯 Daily Study Goal</div>
+      <div class="card-description">
+        Set a daily target to build streaks. You'll get a celebration notification when you hit it!
+      </div>
+
+      <div class="slider-row" style="margin-bottom: 16px;">
+        <label class="toggle">
+          <input type="checkbox" id="toggleGoalEnabled">
+          <span class="toggle-slider"></span>
+        </label>
+        <span style="font-size: 13px; color: #d4d4d8;">Enable Daily Goal</span>
+      </div>
+
+      <div class="slider-row" id="goalSliderRow">
+        <span style="font-size: 13px; color: #a1a1aa; width: 50px;">Target:</span>
+        <input type="range" id="goalSlider" min="15" max="360" step="15" value="120">
+        <span class="slider-value" id="goalValue">2h 00m</span>
+      </div>
+    </div>
+
+    <!-- Display Options Card -->
+    <div class="card">
+      <div class="card-title">👁️ Display Options</div>
+      <div class="card-description">
+        Choose how you want to see your study timer. You can enable multiple options at once.
+      </div>
+
+      <ul class="site-list" id="displayOptions">
+        <li class="site-item">
+          <label class="toggle">
+            <input type="checkbox" id="toggleWidget">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="site-domain" style="font-family: 'Inter', sans-serif;">Floating Widget</span>
+          <span class="site-badge">Overlay on page</span>
+        </li>
+        <li class="site-item">
+          <label class="toggle">
+            <input type="checkbox" id="toggleSidePanel">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="site-domain" style="font-family: 'Inter', sans-serif;">Side Panel</span>
+          <span class="site-badge">Docked sidebar</span>
+        </li>
+        <li class="site-item">
+          <label class="toggle">
+            <input type="checkbox" id="toggleNewTab">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="site-domain" style="font-family: 'Inter', sans-serif;">Pinned Dashboard Tab</span>
+          <span class="site-badge">Opens pinned tab</span>
+        </li>
+        <li class="site-item">
+          <label class="toggle">
+            <input type="checkbox" id="toggleTabTitle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="site-domain" style="font-family: 'Inter', sans-serif;">Tab Title Timer</span>
+          <span class="site-badge">Browser tab title</span>
+        </li>
+        <li class="site-item">
+          <label class="toggle">
+            <input type="checkbox" id="toggleDynamicIcon">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="site-domain" style="font-family: 'Inter', sans-serif;">Dynamic Icon</span>
+          <span class="site-badge">Toolbar pie chart</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Notifications Card -->
+    <div class="card">
+      <div class="card-title">🔔 Notifications</div>
+      <div class="card-description">
+        Get a desktop notification when you hit study milestones (e.g. every 60 minutes).
+      </div>
+      
+      <div class="slider-row" style="margin-top: 12px;">
+        <label class="toggle">
+          <input type="checkbox" id="toggleNotifications">
+          <span class="toggle-slider"></span>
+        </label>
+        <span style="font-size: 13px; color: #d4d4d8;">Enable Milestone Alerts</span>
+      </div>
+
+      <div class="slider-row" style="margin-top: 16px;">
+        <span style="font-size: 13px; color: #a1a1aa; width: 60px;">Every:</span>
+        <input type="range" id="notificationIntervalSlider" class="slider" min="15" max="120" step="15" value="60">
+        <span class="slider-value" id="notificationIntervalValue">60 min</span>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card danger-zone">
+      <div class="card-title">⚠️ Danger Zone</div>
+      <div class="card-description">
+        Permanently delete all tracked study time data. This cannot be undone.
+      </div>
+      <button class="danger-btn" id="clearAllBtn">Clear All Data</button>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Saved!</div>
+
+  <script src="defaults.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

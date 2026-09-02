@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab — Smart Study</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Disabled state — show minimal page */
+    .disabled-msg {
+      text-align: center;
+      color: #52525b;
+      font-size: 14px;
+      display: none;
+    }
+
+    .disabled-msg a {
+      color: #4ade80;
+      text-decoration: none;
+    }
+
+    /* Main content */
+    .main {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .greeting {
+      font-size: 18px;
+      font-weight: 500;
+      color: #71717a;
+      margin-bottom: 8px;
+    }
+
+    .date-display {
+      font-size: 13px;
+      color: #52525b;
+      margin-bottom: 48px;
+    }
+
+    /* Big Timer */
+    .big-timer-label {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #52525b;
+      margin-bottom: 12px;
+    }
+
+    .big-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 80px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 12px;
+      transition: color 0.3s ease;
+    }
+
+    .big-timer.tracking {
+      color: #4ade80;
+      text-shadow: 0 0 60px rgba(74,222,128,0.15);
+    }
+
+    /* Status */
+    .nt-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 48px;
+    }
+
+    .nt-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #52525b;
+    }
+
+    .nt-status-dot.active {
+      background: #4ade80;
+      box-shadow: 0 0 8px rgba(74,222,128,0.5);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+    }
+
+    .nt-status-text {
+      font-size: 13px;
+      color: #71717a;
+    }
+
+    .nt-status-site { color: #a1a1aa; font-weight: 500; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .nt-stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 20px 28px;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .nt-stat.highlight {
+      background: rgba(74,222,128,0.05);
+      border-color: rgba(74,222,128,0.12);
+    }
+
+    .nt-stat-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #52525b;
+      margin-bottom: 8px;
+    }
+
+    .nt-stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #d4d4d8;
+    }
+
+    .nt-stat.highlight .nt-stat-value {
+      color: #4ade80;
+    }
+
+    /* Motivational quote */
+    .quote {
+      margin-top: 48px;
+      font-size: 14px;
+      color: #3f3f46;
+      font-style: italic;
+      max-width: 500px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shown when new tab display is disabled -->
+  <div class="disabled-msg" id="disabledMsg">
+    <p>New Tab Dashboard is disabled.</p>
+    <p style="margin-top:8px;">Enable it in <a href="#" id="openSettingsLink">Settings</a>.</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="mainContent">
+    <div class="greeting" id="greeting">Good afternoon</div>
+    <div class="date-display" id="dateDisplay"></div>
+
+    <div class="big-timer-label">Total Study Time</div>
+    <div class="big-timer" id="bigTimer">00:00:00</div>
+
+    <div class="nt-status">
+      <div class="nt-status-dot" id="statusDot"></div>
+      <div class="nt-status-text" id="statusText">Not tracking</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="nt-stat highlight">
+        <div class="nt-stat-label">Today</div>
+        <div class="nt-stat-value" id="todayStat">0:00</div>
+      </div>
+      <div class="nt-stat">
+        <div class="nt-stat-label">This Week</div>
+        <div class="nt-stat-value" id="weekStat">0:00</div>
+      </div>
+      <div class="nt-stat">
+        <div class="nt-stat-label">Current Site</div>
+        <div class="nt-stat-value" id="siteStat">—</div>
+      </div>
+    </div>
+
+    <div class="quote" id="quote"></div>
+  </div>
+
+  <script src="newtab.js"></script>
+</body>
+</html>

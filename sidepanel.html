@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Study Stopwatch</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      width: 100%;
+      min-width: 200px;
+      height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .panel-header .icon {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+
+    .panel-header .title {
+      font-size: 13px; font-weight: 600;
+    }
+
+    /* Global Timer */
+    .timer-section {
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .timer-label {
+      font-size: 10px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #71717a; margin-bottom: 6px;
+    }
+
+    .timer-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 36px; font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      transition: color 0.3s ease;
+    }
+
+    .timer-value.tracking {
+      color: #4ade80;
+      text-shadow: 0 0 25px rgba(74,222,128,0.2);
+    }
+
+    /* Status */
+    .status {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 8px 0; margin-bottom: 12px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #52525b;
+    }
+
+    .status-dot.active {
+      background: #4ade80;
+      box-shadow: 0 0 6px rgba(74,222,128,0.5);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-size: 11px; color: #71717a;
+    }
+
+    .status-site { color: #a1a1aa; font-weight: 500; }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex; gap: 8px; margin-bottom: 12px;
+    }
+
+    .stat {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 9px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #52525b; margin-bottom: 4px;
+    }
+
+    .stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px; font-weight: 700; color: #d4d4d8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="panel-header">
+    <div class="icon">📚</div>
+    <div class="title">Study Stopwatch</div>
+  </div>
+
+  <div class="timer-section">
+    <div class="timer-label">Total Study Time</div>
+    <div class="timer-value" id="globalTime">00:00:00</div>
+  </div>
+
+  <div class="status">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-text" id="statusText">Not tracking</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Today</div>
+      <div class="stat-val" id="todayTime">0:00</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Site</div>
+      <div class="stat-val" id="currentSite">—</div>
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

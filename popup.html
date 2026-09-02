@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="popup-header">
+    <div class="logo-icon">📚</div>
+    <div class="title">Smart Study Stopwatch</div>
+    <label class="toggle master-toggle" style="margin-left: auto;" title="Toggle Extension ON/OFF">
+      <input type="checkbox" id="extensionToggle" checked>
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <!-- Global Timer -->
+  <div class="global-timer-section">
+    <div class="timer-ring-container">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+        <circle class="progress-ring-fill" id="progressRing" cx="60" cy="60" r="52" />
+      </svg>
+      <div class="timer-ring-content">
+        <div class="global-label">Total Study Time</div>
+        <div class="global-time" id="globalTime">00:00:00</div>
+      </div>
+    </div>
+    <div class="goal-label" id="goalLabel" style="display:none;">
+      <span class="goal-text" id="goalText"></span>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <div class="status-text" id="statusText">Not tracking</div>
+  </div>
+
+  <!-- Today's Stats -->
+  <div class="today-section">
+    <div class="stat-card">
+      <div class="stat-label">Today</div>
+      <div class="stat-value" id="todayTime">0:00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Current Site</div>
+      <div class="stat-value" id="currentSite">—</div>
+    </div>
+  </div>
+
+  <!-- Display Options -->
+  <div class="display-options">
+    <div class="display-options-title">Display Options</div>
+    <div class="display-toggles">
+      <label class="toggle-row">
+        <span>Widget</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggleWidgetPopup">
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row">
+        <span>Side Panel</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggleSidePanelPopup">
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row">
+        <span>Dashboard Tab</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggleNewTabPopup">
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row">
+        <span>Tab Title</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggleTabTitlePopup">
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row">
+        <span>Dynamic Icon</span>
+        <div class="toggle">
+          <input type="checkbox" id="toggleDynamicIconPopup">
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-secondary" id="dashboardBtn">📊 Dashboard</button>
+    <button class="btn btn-danger" id="resetTodayBtn">↺ Reset Today</button>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-links">
+    <button class="footer-link" id="settingsBtn">⚙️ Settings</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -334,3 +334,11 @@ chrome.storage.local.get(['customSites', 'disabledSites', 'idleTimeoutMs', 'disp
 
   renderSiteList();
 });
+
+// ---- Navigation ----
+const dashboardBtn = document.getElementById('dashboardBtn');
+if (dashboardBtn) {
+  dashboardBtn.addEventListener('click', () => {
+    chrome.tabs.create({ url: 'dashboard.html' });
+  });
+}

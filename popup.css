@@ -58,8 +58,8 @@ body {
 
 .timer-ring-container {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 170px;
+  height: 170px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,8 +83,8 @@ body {
   stroke: #22c55e;
   stroke-width: 5;
   stroke-linecap: round;
-  stroke-dasharray: 326.73;  /* 2 * PI * 52 */
-  stroke-dashoffset: 326.73; /* fully hidden */
+  stroke-dasharray: 452.39;  /* 2 * PI * 72 */
+  stroke-dashoffset: 452.39; /* fully hidden */
   transition: stroke-dashoffset 0.8s ease;
   filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.3));
 }
@@ -226,40 +226,7 @@ body {
   color: #e4e4e7;
 }
 
-/* ---- Display Options ---- */
-.display-options {
-  padding: 12px 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  margin-top: 8px;
-}
-
-.display-options-title {
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #71717a;
-  margin-bottom: 12px;
-}
-
-.display-toggles {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.toggle-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #d4d4d8;
-  cursor: pointer;
-}
-
-/* Toggle Switch (reused from options.css) */
+/* ---- Buttons ---- */
 .toggle { position: relative; width: 34px; height: 18px; flex-shrink: 0; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.1); border-radius: 18px; transition: background 0.2s ease; }
@@ -320,14 +287,15 @@ body {
 }
 
 .footer-link {
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 500;
-  color: #52525b;
+  color: #a1a1aa;
   text-decoration: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 4px 8px;
   transition: color 0.2s ease;
   background: none;
   border: none;
@@ -335,5 +303,5 @@ body {
 }
 
 .footer-link:hover {
-  color: #a1a1aa;
+  color: #e4e4e7;
 }

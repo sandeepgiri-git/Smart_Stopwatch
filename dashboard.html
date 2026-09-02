@@ -39,6 +39,28 @@
     .page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
     .page-header .subtitle { font-size: 13px; color: #71717a; margin-top: 2px; }
 
+    .nav-button {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e4e4e7;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
     /* Hero Stats */
     .hero-stats {
       display: grid;
@@ -384,9 +406,10 @@
     <div class="page-header">
       <div class="logo-icon">📊</div>
       <div>
-        <h1>Study Dashboard</h1>
-        <div class="subtitle">Your learning analytics at a glance</div>
+        <h1>Dashboard</h1>
+        <div class="subtitle">Your learning journey at a glance</div>
       </div>
+      <button class="nav-button" id="settingsBtn">⚙️ Settings</button>
     </div>
 
     <!-- Hero Stats -->

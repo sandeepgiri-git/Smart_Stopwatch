@@ -388,3 +388,11 @@ document.querySelectorAll('.view-btn').forEach(btn => {
 // ---- Initial render & auto-refresh ----
 render();
 setInterval(render, 5000);
+
+// ---- Navigation ----
+const settingsBtn = document.getElementById('settingsBtn');
+if (settingsBtn) {
+  settingsBtn.addEventListener('click', () => {
+    chrome.runtime.openOptionsPage ? chrome.runtime.openOptionsPage() : chrome.tabs.create({ url: 'options.html' });
+  });
+}

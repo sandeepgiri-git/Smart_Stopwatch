@@ -102,7 +102,7 @@ function getHeatmapLevel(seconds) {
   return 4; // > 2h
 }
 
-function renderHeatmap(dailyLogs) {
+function renderHeatmap(dailyLogs, goalSettings) {
   const grid = document.getElementById('heatmapGrid');
   if (!grid) return;
   grid.innerHTML = '';
@@ -135,10 +135,24 @@ function renderHeatmap(dailyLogs) {
         cell.dataset.level = level;
       }
       
+      let isStreakDay = false;
+      if (goalSettings && goalSettings.enabled && seconds > 0) {
+        const goalSeconds = goalSettings.dailyGoalMins * 60;
+        if (seconds >= goalSeconds) {
+          isStreakDay = true;
+          cell.classList.add('streak-day');
+        }
+      }
+      
       cell.addEventListener('mouseenter', () => {
         const tooltip = document.getElementById('heatmapTooltip');
         document.getElementById('tooltipDate').textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('tooltipTime').textContent = seconds > 0 ? formatTimeShort(seconds) : '0m 00s';
+        
+        let timeText = seconds > 0 ? formatTimeShort(seconds) : '0m 00s';
+        if (isStreakDay) {
+          timeText += ' 🔥 Goal Reached';
+        }
+        document.getElementById('tooltipTime').textContent = timeText;
         
         const rect = cell.getBoundingClientRect();
         tooltip.style.display = 'block';
@@ -226,7 +240,7 @@ function render() {
     renderStreakCard(streakDataResult, goalSettings, todayTotal);
 
     // Render Heatmap
-    renderHeatmap(dailyLogs);
+    renderHeatmap(dailyLogs, goalSettings);
 
     // Breakdown based on filter
     let dateKeys;

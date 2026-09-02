@@ -218,6 +218,16 @@
     .heatmap-cell[data-level="3"] { background: #26a641; }
     .heatmap-cell[data-level="4"] { background: #39d353; }
 
+    .heatmap-cell.streak-day {
+      box-shadow: 0 0 0 1px #facc15;
+      position: relative;
+      z-index: 1;
+    }
+    .heatmap-cell.streak-day:hover {
+      box-shadow: 0 0 0 2px #facc15;
+      opacity: 1;
+    }
+
     /* Tooltip */
     #heatmapTooltip {
       position: absolute;

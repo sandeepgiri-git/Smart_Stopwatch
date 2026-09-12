@@ -213,10 +213,16 @@
       box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
     }
 
-    .heatmap-cell[data-level="1"] { background: #0e4429; }
-    .heatmap-cell[data-level="2"] { background: #006d32; }
-    .heatmap-cell[data-level="3"] { background: #26a641; }
-    .heatmap-cell[data-level="4"] { background: #39d353; }
+    .heatmap-cell[data-level="1"] { background: #052414; }
+    .heatmap-cell[data-level="2"] { background: #08331c; }
+    .heatmap-cell[data-level="3"] { background: #0e4429; }
+    .heatmap-cell[data-level="4"] { background: #0a5730; }
+    .heatmap-cell[data-level="5"] { background: #006d32; }
+    .heatmap-cell[data-level="6"] { background: #108538; }
+    .heatmap-cell[data-level="7"] { background: #1c993d; }
+    .heatmap-cell[data-level="8"] { background: #26a641; }
+    .heatmap-cell[data-level="9"] { background: #39d353; }
+    .heatmap-cell[data-level="10"] { background: #4ade80; }
 
     /* Tooltip */
     #heatmapTooltip {
@@ -364,6 +370,28 @@
       font-weight: 600;
       font-size: 13px;
     }
+
+    .nav-button {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e4e4e7;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -377,6 +405,7 @@
         <h1>Study Dashboard</h1>
         <div class="subtitle">Your learning analytics at a glance</div>
       </div>
+      <button class="nav-button" id="settingsBtn">⚙️ Settings</button>
     </div>
 
     <!-- Hero Stats -->
@@ -428,14 +457,8 @@
     <div class="heatmap-card">
       <div class="heatmap-header">
         <div class="heatmap-title">🗓️ Study Consistency</div>
-        <div class="heatmap-legend">
-          <span class="legend-label">Less</span>
-          <div class="heatmap-cell" style="cursor:default"></div>
-          <div class="heatmap-cell" data-level="1" style="cursor:default"></div>
-          <div class="heatmap-cell" data-level="2" style="cursor:default"></div>
-          <div class="heatmap-cell" data-level="3" style="cursor:default"></div>
-          <div class="heatmap-cell" data-level="4" style="cursor:default"></div>
-          <span class="legend-label">More</span>
+        <div class="heatmap-legend" id="heatmapStreakContainer">
+          <span class="legend-label">🔥 Current Streak: <strong id="heatmapStreak" style="color: #fb923c; font-family: 'JetBrains Mono', monospace; font-size: 13px;">0</strong></span>
         </div>
       </div>
       <div class="heatmap-container">

@@ -51,8 +51,23 @@ function observeVideos() {
   });
 }
 
+// Reliable video playback heartbeat — bypasses throttle
+// Ensures idle timeout never triggers while a video is actively playing
+function checkVideoPlayback() {
+  const videos = document.querySelectorAll('video');
+  for (const video of videos) {
+    if (!video.paused && !video.ended && video.readyState > 2) {
+      // A video is actively playing — force a heartbeat (bypass throttle)
+      lastHeartbeat = 0;
+      sendHeartbeat();
+      return;
+    }
+  }
+}
+
 observeVideos();
 const videoObserverInterval = setInterval(observeVideos, 5000);
+const videoPlaybackInterval = setInterval(checkVideoPlayback, 3000);
 
 const mutationObserver = new MutationObserver(() => {
   observeVideos();

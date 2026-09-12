@@ -26,7 +26,7 @@ function shortenDomain(domain) {
 }
 
 // ---- Update Display ----
-const RING_CIRCUMFERENCE = 2 * Math.PI * 52; // ~326.73
+const RING_CIRCUMFERENCE = 2 * Math.PI * 72; // ~452.39
 
 function updateProgressRing(todayTotal, goalSettings) {
   const ring = document.getElementById('progressRing');
@@ -147,69 +147,4 @@ document.getElementById('dashboardBtn').addEventListener('click', () => {
 // ---- Settings Button ----
 document.getElementById('settingsBtn').addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
-});
-
-// ---- Display Options Logic ----
-const toggleWidgetPopup = document.getElementById('toggleWidgetPopup');
-const toggleSidePanelPopup = document.getElementById('toggleSidePanelPopup');
-const toggleNewTabPopup = document.getElementById('toggleNewTabPopup');
-const toggleTabTitlePopup = document.getElementById('toggleTabTitlePopup');
-const toggleDynamicIconPopup = document.getElementById('toggleDynamicIconPopup');
-
-// Load settings
-chrome.storage.local.get(['displaySettings'], (result) => {
-  const settings = result.displaySettings || { widget: false, sidePanel: false, newtab: false, tabTitle: false, dynamicIcon: false };
-  toggleWidgetPopup.checked = settings.widget;
-  toggleSidePanelPopup.checked = settings.sidePanel;
-  toggleNewTabPopup.checked = settings.newtab;
-  toggleTabTitlePopup.checked = settings.tabTitle;
-  toggleDynamicIconPopup.checked = settings.dynamicIcon;
-});
-
-function savePopupDisplaySettings() {
-  chrome.storage.local.get(['displaySettings'], (result) => {
-    const settings = result.displaySettings || { widget: false, sidePanel: false, newtab: false, tabTitle: false, dynamicIcon: false };
-    settings.widget = toggleWidgetPopup.checked;
-    settings.sidePanel = toggleSidePanelPopup.checked;
-    settings.newtab = toggleNewTabPopup.checked;
-    settings.tabTitle = toggleTabTitlePopup.checked;
-    settings.dynamicIcon = toggleDynamicIconPopup.checked;
-    
-    chrome.storage.local.set({ displaySettings: settings }, () => {
-      chrome.runtime.sendMessage({ type: 'UPDATE_SETTINGS' });
-    });
-  });
-}
-
-toggleWidgetPopup.addEventListener('change', savePopupDisplaySettings);
-toggleTabTitlePopup.addEventListener('change', savePopupDisplaySettings);
-toggleDynamicIconPopup.addEventListener('change', savePopupDisplaySettings);
-
-toggleSidePanelPopup.addEventListener('change', () => {
-  savePopupDisplaySettings();
-  if (toggleSidePanelPopup.checked) {
-    // Enable the side panel first, then open it in the current window.
-    // Calling this directly in the popup satisfies the 'user gesture' requirement.
-    chrome.sidePanel.setOptions({ path: 'sidepanel.html', enabled: true }).then(() => {
-      chrome.windows.getCurrent((win) => {
-        if (win) {
-          chrome.sidePanel.open({ windowId: win.id }).catch(() => {});
-        }
-      });
-    }).catch(() => {});
-  } else {
-    chrome.runtime.sendMessage({ type: 'CLOSE_SIDE_PANEL' });
-  }
-});
-
-toggleNewTabPopup.addEventListener('change', () => {
-  savePopupDisplaySettings();
-  const dashUrl = chrome.runtime.getURL('newtab.html');
-  if (toggleNewTabPopup.checked) {
-    chrome.tabs.create({ url: dashUrl, pinned: true });
-  } else {
-    chrome.tabs.query({ url: dashUrl }, (tabs) => {
-      tabs.forEach(tab => chrome.tabs.remove(tab.id));
-    });
-  }
 });

@@ -93,13 +93,81 @@ function aggregateByCategory(sites, userCategories) {
   return { categories, total };
 }
 
+// ---- Dynamic Streak Calculation ----
+function calculateStreaksFromLogs(dailyLogs, goalSettings) {
+  if (!goalSettings || !goalSettings.enabled) {
+    return { current: 0, longest: 0 };
+  }
+
+  const goalSeconds = goalSettings.dailyGoalMins * 60;
+
+  const metGoalDates = Object.keys(dailyLogs)
+    .filter(key => {
+      const log = dailyLogs[key];
+      return log && log.total >= goalSeconds;
+    })
+    .sort();
+
+  if (metGoalDates.length === 0) {
+    return { current: 0, longest: 0 };
+  }
+
+  function getPrevDateKey(dateKey) {
+    const d = new Date(dateKey + 'T00:00:00');
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  const metGoalSet = new Set(metGoalDates);
+
+  // Calculate longest streak
+  let longest = 1;
+  let currentRun = 1;
+  for (let i = 1; i < metGoalDates.length; i++) {
+    const expectedPrev = getPrevDateKey(metGoalDates[i]);
+    if (expectedPrev === metGoalDates[i - 1]) {
+      currentRun++;
+    } else {
+      currentRun = 1;
+    }
+    if (currentRun > longest) longest = currentRun;
+  }
+
+  // Calculate current streak: walk backwards from today
+  const today = getTodayKey();
+  let current = 0;
+  let checkDate = today;
+
+  while (metGoalSet.has(checkDate)) {
+    current++;
+    checkDate = getPrevDateKey(checkDate);
+  }
+
+  // If today hasn't met the goal yet, check if yesterday started a streak
+  if (current === 0) {
+    checkDate = getPrevDateKey(today);
+    while (metGoalSet.has(checkDate)) {
+      current++;
+      checkDate = getPrevDateKey(checkDate);
+    }
+  }
+
+  return { current, longest };
+}
+
 // ---- Heatmap ----
 function getHeatmapLevel(seconds) {
   if (!seconds || seconds === 0) return 0;
-  if (seconds < 1800) return 1; // < 30m
-  if (seconds < 3600) return 2; // 30m - 1h
-  if (seconds < 7200) return 3; // 1h - 2h
-  return 4; // > 2h
+  if (seconds < 900) return 1;    // < 15m
+  if (seconds < 1800) return 2;   // < 30m
+  if (seconds < 3600) return 3;   // < 1h
+  if (seconds < 5400) return 4;   // < 1.5h
+  if (seconds < 7200) return 5;   // < 2h
+  if (seconds < 10800) return 6;  // < 3h
+  if (seconds < 14400) return 7;  // < 4h
+  if (seconds < 18000) return 8;  // < 5h
+  if (seconds < 21600) return 9;  // < 6h
+  return 10;                      // > 6h
 }
 
 function renderHeatmap(dailyLogs) {
@@ -169,6 +237,9 @@ function renderHeatmap(dailyLogs) {
 // ---- Streak Card ----
 function renderStreakCard(streakData, goalSettings, todayTotal) {
   const card = document.getElementById('streakCard');
+  const heatmapStreak = document.getElementById('heatmapStreak');
+  if (heatmapStreak) heatmapStreak.textContent = streakData.current || 0;
+
   if (!goalSettings || !goalSettings.enabled) {
     card.style.display = 'none';
     return;
@@ -204,11 +275,13 @@ let currentView = 'website'; // 'website' or 'category'
 
 // ---- Render ----
 function render() {
-  chrome.storage.local.get(['dailyLogs', 'goalSettings', 'streakData', 'siteCategories'], (result) => {
+  chrome.storage.local.get(['dailyLogs', 'goalSettings', 'siteCategories'], (result) => {
     const dailyLogs = result.dailyLogs || {};
     const goalSettings = result.goalSettings || { enabled: false, dailyGoalMins: 120 };
-    const streakDataResult = result.streakData || { current: 0, longest: 0, lastGoalDate: '' };
     const userCategories = result.siteCategories || {};
+
+    // Dynamically calculate streaks from dailyLogs
+    const streakResult = calculateStreaksFromLogs(dailyLogs, goalSettings);
 
     // Hero stats — compute all-time total from dailyLogs (studyTime resets daily)
     const allTimeTotal = Object.values(dailyLogs).reduce((sum, log) => sum + (log.total || 0), 0);
@@ -223,7 +296,7 @@ function render() {
     document.getElementById('weekTotal').textContent = formatTimeShort(weekTotal);
 
     // Streak card
-    renderStreakCard(streakDataResult, goalSettings, todayTotal);
+    renderStreakCard(streakResult, goalSettings, todayTotal);
 
     // Render Heatmap
     renderHeatmap(dailyLogs);
@@ -374,3 +447,11 @@ document.querySelectorAll('.view-btn').forEach(btn => {
 // ---- Initial render & auto-refresh ----
 render();
 setInterval(render, 5000);
+
+// ---- Navigation ----
+const settingsBtn = document.getElementById('settingsBtn');
+if (settingsBtn) {
+  settingsBtn.addEventListener('click', () => {
+    chrome.runtime.openOptionsPage ? chrome.runtime.openOptionsPage() : chrome.tabs.create({ url: 'options.html' });
+  });
+}

@@ -58,8 +58,8 @@ body {
 
 .timer-ring-container {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 170px;
+  height: 170px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,16 +75,16 @@ body {
 .progress-ring-bg {
   fill: none;
   stroke: rgba(255, 255, 255, 0.06);
-  stroke-width: 5;
+  stroke-width: 6;
 }
 
 .progress-ring-fill {
   fill: none;
   stroke: #22c55e;
-  stroke-width: 5;
+  stroke-width: 6;
   stroke-linecap: round;
-  stroke-dasharray: 326.73;  /* 2 * PI * 52 */
-  stroke-dashoffset: 326.73; /* fully hidden */
+  stroke-dasharray: 452.39;  /* 2 * PI * 72 */
+  stroke-dashoffset: 452.39; /* fully hidden */
   transition: stroke-dashoffset 0.8s ease;
   filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.3));
 }
@@ -226,37 +226,17 @@ body {
   color: #e4e4e7;
 }
 
-/* ---- Display Options ---- */
-.display-options {
-  padding: 12px 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  margin-top: 8px;
-}
-
-.display-options-title {
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #71717a;
-  margin-bottom: 12px;
-}
-
-.display-toggles {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.toggle-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
+/* ---- Settings Button ---- */
+.btn-settings {
+  background: rgba(255, 255, 255, 0.06);
   color: #d4d4d8;
-  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+}
+
+.btn-settings:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
 }
 
 /* Toggle Switch (reused from options.css) */

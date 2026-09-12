@@ -17,9 +17,12 @@ const DEFAULT_STUDY_SITES = [
   "chatgpt.com", "claude.ai", "gemini.google.com", "perplexity.ai"
 ];
 
+const ALLOWED_YT_CATEGORIES = ['Education', 'Science & Technology', 'Howto & Style', 'News & Politics'];
+
 // ---- State ----
 let activeTabId = null;
 let activeTabUrl = '';
+let activeYoutubeCategory = null;
 let isTabVisible = true;
 let isUserActive = true;           // Assume active on startup (service worker wake = user present)
 let lastActivityTime = Date.now(); // Assume recent activity on startup
@@ -93,52 +96,86 @@ async function loadState() {
   // Daily reset check on load
   const today = getTodayKey();
   if (lastTrackedDate !== today) {
-    // Before resetting, check if yesterday met the goal for streak tracking
-    updateStreakOnDayChange(lastTrackedDate);
     studyTime = 0;
     goalCelebratedToday = false;
     lastTrackedDate = today;
   }
   
+  // Always recalculate streaks from dailyLogs on load
+  calculateStreaks();
+  
   whitelist = [...DEFAULT_STUDY_SITES, ...customSites];
 }
 
 // ---- Streak Logic ----
-function updateStreakOnDayChange(previousDateKey) {
-  if (!goalSettings.enabled) return;
+// Dynamically calculates current and longest streaks from dailyLogs.
+// This ensures today is always counted and goal changes recalculate correctly.
+function calculateStreaks() {
+  if (!goalSettings.enabled) {
+    streakData = { current: 0, longest: 0 };
+    return streakData;
+  }
 
-  const prevLog = dailyLogs[previousDateKey];
-  const prevTotal = prevLog ? prevLog.total : 0;
   const goalSeconds = goalSettings.dailyGoalMins * 60;
+  
+  // Get all date keys that met the goal, sorted ascending
+  const metGoalDates = Object.keys(dailyLogs)
+    .filter(key => {
+      const log = dailyLogs[key];
+      return log && log.total >= goalSeconds;
+    })
+    .sort();
 
-  if (prevTotal >= goalSeconds) {
-    // Previous day met the goal
-    if (streakData.lastGoalDate === previousDateKey) {
-      // Already counted (e.g. goal was met during the day)
-      return;
+  if (metGoalDates.length === 0) {
+    streakData = { current: 0, longest: 0 };
+    return streakData;
+  }
+
+  // Helper: get the previous calendar date key
+  function getPrevDateKey(dateKey) {
+    const d = new Date(dateKey + 'T00:00:00');
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  // Build a Set for O(1) lookup
+  const metGoalSet = new Set(metGoalDates);
+
+  // Calculate longest streak by walking through all met-goal dates
+  let longest = 1;
+  let currentRun = 1;
+  for (let i = 1; i < metGoalDates.length; i++) {
+    const expectedPrev = getPrevDateKey(metGoalDates[i]);
+    if (expectedPrev === metGoalDates[i - 1]) {
+      currentRun++;
+    } else {
+      currentRun = 1;
     }
-    streakData.current++;
-    streakData.lastGoalDate = previousDateKey;
-    if (streakData.current > streakData.longest) {
-      streakData.longest = streakData.current;
-    }
-  } else {
-    // Previous day did NOT meet goal — break streak
-    // But only if the last goal date isn't today (we haven't skipped multiple days)
-    const lastGoal = streakData.lastGoalDate;
-    if (lastGoal && lastGoal !== previousDateKey) {
-      // Check if consecutive
-      const prev = new Date(previousDateKey + 'T00:00:00');
-      const last = new Date(lastGoal + 'T00:00:00');
-      const diffDays = Math.round((prev - last) / (1000 * 60 * 60 * 24));
-      if (diffDays > 1) {
-        streakData.current = 0;
-      }
-    }
-    if (!lastGoal) {
-      streakData.current = 0;
+    if (currentRun > longest) longest = currentRun;
+  }
+
+  // Calculate current streak: walk backwards from today
+  const today = getTodayKey();
+  let current = 0;
+  let checkDate = today;
+  
+  while (metGoalSet.has(checkDate)) {
+    current++;
+    checkDate = getPrevDateKey(checkDate);
+  }
+
+  // If today hasn't met the goal yet, check if yesterday started a streak
+  // (the streak is still "alive" — user just hasn't hit the goal yet today)
+  if (current === 0) {
+    checkDate = getPrevDateKey(today);
+    while (metGoalSet.has(checkDate)) {
+      current++;
+      checkDate = getPrevDateKey(checkDate);
     }
   }
+
+  streakData = { current, longest };
+  return streakData;
 }
 
 let saveTimeout = null;
@@ -244,14 +281,20 @@ function tick() {
   const domain = extractDomain(activeTabUrl);
   const isWhitelisted = isDomainWhitelisted(domain);
   const isActive = isUserActive && (Date.now() - lastActivityTime < idleTimeoutMs);
-  const isTracking = extensionEnabled && isTabVisible && isWhitelisted && isActive;
+  let isTracking = extensionEnabled && isTabVisible && isWhitelisted && isActive;
+
+  if (isTracking && domain === 'youtube.com') {
+    if (activeYoutubeCategory && !ALLOWED_YT_CATEGORIES.includes(activeYoutubeCategory)) {
+      isTracking = false;
+    }
+  }
 
   const today = getTodayKey();
   if (lastTrackedDate !== today) {
-    updateStreakOnDayChange(lastTrackedDate);
     studyTime = 0;
     goalCelebratedToday = false;
     lastTrackedDate = today;
+    calculateStreaks();
     forceSave();
   }
 
@@ -274,12 +317,8 @@ function tick() {
       const todayTotal = dailyLogs[today].total;
       if (todayTotal >= goalSeconds) {
         goalCelebratedToday = true;
-        // Update streak immediately
-        streakData.current++;
-        streakData.lastGoalDate = today;
-        if (streakData.current > streakData.longest) {
-          streakData.longest = streakData.current;
-        }
+        // Recalculate streaks now that today met the goal
+        calculateStreaks();
         // Fire celebration notification
         const hours = Math.floor(goalSettings.dailyGoalMins / 60);
         const mins = goalSettings.dailyGoalMins % 60;
@@ -345,7 +384,13 @@ function getTrackingStatus() {
   const domain = extractDomain(activeTabUrl);
   const isWhitelisted = isDomainWhitelisted(domain);
   const isActive = isUserActive && (Date.now() - lastActivityTime < idleTimeoutMs);
-  const isTracking = extensionEnabled && isTabVisible && isWhitelisted && isActive;
+  let isTracking = extensionEnabled && isTabVisible && isWhitelisted && isActive;
+
+  if (isTracking && domain === 'youtube.com') {
+    if (activeYoutubeCategory && !ALLOWED_YT_CATEGORIES.includes(activeYoutubeCategory)) {
+      isTracking = false;
+    }
+  }
   const today = getTodayKey();
   const todayTotal = (dailyLogs[today] && dailyLogs[today].total) || 0;
 
@@ -357,7 +402,8 @@ function getTrackingStatus() {
     todayTotal,
     isWhitelisted,
     isActive,
-    isTabVisible
+    isTabVisible,
+    activeYoutubeCategory
   };
 }
 
@@ -411,7 +457,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         isTabVisible = true; // Fixes bug where window focus events are lost after OS sleep/lock
         activeTabId = sender.tab.id;
         activeTabUrl = sender.tab.url || activeTabUrl;
+        if (message.youtubeCategory !== undefined) {
+          activeYoutubeCategory = message.youtubeCategory;
+        }
       }
+    }
+  } else if (message.type === 'YOUTUBE_CATEGORY_UPDATE') {
+    if (sender.tab && sender.tab.active) {
+      activeYoutubeCategory = message.category;
     }
   } else if (message.type === 'VISIBILITY_CHANGE') {
     if (sender.tab && sender.tab.id === activeTabId) {

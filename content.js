@@ -7,6 +7,8 @@
 let lastHeartbeat = 0;
 const HEARTBEAT_THROTTLE_MS = 3000; // Send at most 1 heartbeat per 3 seconds
 
+let currentYTCategory = null;
+
 // ---- Send activity heartbeat (throttled) ----
 function sendHeartbeat() {
   const now = Date.now();
@@ -14,9 +16,32 @@ function sendHeartbeat() {
   lastHeartbeat = now;
 
   try {
-    chrome.runtime.sendMessage({ type: 'ACTIVITY_HEARTBEAT' });
+    chrome.runtime.sendMessage({ 
+      type: 'ACTIVITY_HEARTBEAT',
+      youtubeCategory: currentYTCategory
+    });
   } catch {
     // Extension context invalidated (e.g., during reload) — ignore
+  }
+}
+
+// ---- YouTube Category Extractor ----
+function checkYouTubeCategory() {
+  if (window.location.hostname.includes('youtube.com')) {
+    const genreMeta = document.querySelector('meta[itemprop="genre"]');
+    const newCategory = genreMeta ? genreMeta.content : null;
+    
+    if (newCategory !== currentYTCategory) {
+      currentYTCategory = newCategory;
+      try {
+        chrome.runtime.sendMessage({
+          type: 'YOUTUBE_CATEGORY_UPDATE',
+          category: currentYTCategory
+        });
+      } catch {
+        // ignore
+      }
+    }
   }
 }
 
@@ -41,6 +66,8 @@ document.addEventListener('visibilitychange', () => {
 
 // ---- Video detection ----
 function observeVideos() {
+  checkYouTubeCategory(); // Check category whenever we observe videos
+
   const videos = document.querySelectorAll('video');
   videos.forEach(video => {
     if (video._smartStopwatchObserved) return;

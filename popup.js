@@ -74,7 +74,7 @@ function updateDisplay() {
       return;
     }
 
-    const { isTracking, extensionEnabled, currentSite, studyTime, todayTotal } = response;
+    const { isTracking, extensionEnabled, currentSite, studyTime, todayTotal, activeYoutubeCategory } = response;
 
     const extToggle = document.getElementById('extensionToggle');
     if (extToggle && extToggle.checked !== extensionEnabled) {
@@ -108,8 +108,16 @@ function updateDisplay() {
     // Today
     document.getElementById('todayTime').innerText = formatTimeShort(todayTotal);
 
-    // Current site
+    // Current site and category
     document.getElementById('currentSite').innerText = shortenDomain(currentSite);
+    
+    const ytCategoryEl = document.getElementById('ytCategory');
+    if (currentSite === 'youtube.com' && activeYoutubeCategory) {
+      ytCategoryEl.innerText = `Category: ${activeYoutubeCategory}`;
+      ytCategoryEl.style.display = 'block';
+    } else {
+      ytCategoryEl.style.display = 'none';
+    }
 
     // Progress ring — read goal settings from storage
     chrome.storage.local.get(['goalSettings'], (result) => {
